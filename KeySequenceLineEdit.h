@@ -20,6 +20,7 @@ class KeySequenceLineEdit : public QLineEdit {
 
  signals:
   void focusChanged(bool focus);
+  void keySequencePressed(const QString& keySequence);
 };
 
 #endif  // KEYSEQUENCELINEEDIT_H

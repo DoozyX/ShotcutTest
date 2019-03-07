@@ -1,6 +1,7 @@
 #include "Widget.h"
 
 #include <QDebug>
+#include <QMessageBox>
 #include <QSettings>
 
 #include "ui_Widget.h"
@@ -11,10 +12,20 @@ Widget::Widget(QWidget* parent) : QWidget(parent), ui(new Ui::Widget) {
   auto setShortcut = [=](QSettings* settings, QShortcut* shortcut,
                          KeySequenceLineEdit* lineEdit, const QString& key,
                          const QString& defaultValue, void (Widget::*slot)()) {
+    mShortcutEditList.append(lineEdit);
     auto shotcutValue = settings->value(key, defaultValue).toString();
     lineEdit->setText(shotcutValue);
-    connect(lineEdit, &QLineEdit::textChanged, this,
-            [=]() { mChangedValues[shortcut] = lineEdit; });
+    connect(lineEdit, &KeySequenceLineEdit::keySequencePressed, this,
+            [=](const QString& keySquence) {
+              if (this->shortcutExists(keySquence)) {
+                QMessageBox::warning(this, tr("Shortcut exists!"),
+                                     tr("New shortcut already exist.\nPlease "
+                                        "record other shortcut."));
+              } else {
+                lineEdit->setText(keySquence);
+                mChangedValues[shortcut] = lineEdit;
+              }
+            });
     connect(lineEdit, &KeySequenceLineEdit::focusChanged, this,
             [=](bool focus) { this->enableShortcuts(!focus); });
     shortcut->setKey(shotcutValue);
@@ -146,6 +157,15 @@ void Widget::discardChangedShortcuts() {
     lineEdit->setText(shortcut->key().toString());
   }
   mChangedValues.clear();
+}
+
+bool Widget::shortcutExists(const QString& shortcut) {
+  for (auto lineEdit : mShortcutEditList) {
+    if (lineEdit->text() == shortcut) {
+      return true;
+    }
+  }
+  return false;
 }
 
 void Widget::on_okButton_clicked() {

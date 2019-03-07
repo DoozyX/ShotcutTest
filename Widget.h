@@ -21,6 +21,7 @@ class Widget : public QWidget {
   Ui::Widget* ui;
   QSettings mSettings;
 
+  QList<KeySequenceLineEdit*> mShortcutEditList;
   QList<QShortcut*> mShortcutList;
   enum ShortcutList {
     OpenCloseMainNavigationShortcut,
@@ -50,6 +51,7 @@ class Widget : public QWidget {
   void enableShortcuts(bool enabled);
   void saveChangedShortcuts();
   void discardChangedShortcuts();
+  bool shortcutExists(const QString& shortcut);
 
  private slots:
   void on_okButton_clicked();

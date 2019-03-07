@@ -35,7 +35,7 @@ void KeySequenceLineEdit::keyPressEvent(QKeyEvent* event) {
       keyInt += Qt::META;
 
     auto newSequence = QKeySequence(keyInt).toString();
-    this->setText(newSequence);
+    emit this->keySequencePressed(newSequence);
   }
 }
 
