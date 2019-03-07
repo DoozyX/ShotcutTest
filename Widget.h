@@ -4,6 +4,8 @@
 #include <QShortcut>
 #include <QWidget>
 
+#include "KeySequenceLineEdit.h"
+
 namespace Ui {
 class Widget;
 }
@@ -17,9 +19,9 @@ class Widget : public QWidget {
 
  private:
   Ui::Widget* ui;
-  QSettings settings;
+  QSettings mSettings;
 
-  QList<QShortcut*> shortcutList;
+  QList<QShortcut*> mShortcutList;
   enum ShortcutList {
     OpenCloseMainNavigationShortcut,
     OpenCloseCallMonitorShortcut,
@@ -43,9 +45,17 @@ class Widget : public QWidget {
     LAST
   };
 
+  QMap<QShortcut*, KeySequenceLineEdit*> mChangedValues;
+
   void enableShortcuts(bool enabled);
+  void saveChangedShortcuts();
+  void discardChangedShortcuts();
 
  private slots:
+  void on_okButton_clicked();
+  void on_applyButton_clicked();
+  void on_cancelButton_clicked();
+
   void onOpenCloseMainNavigation();
   void onOpenCloseCallMonitor();
   void onOpenCloseDetailWindow();
