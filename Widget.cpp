@@ -123,6 +123,8 @@ Widget::Widget(QWidget* parent) : QWidget(parent), ui(new Ui::Widget) {
               &Widget::onTurnDownSpeaker);
 
   mSettings.endGroup();
+
+  ui->cancelButton->setFocus();
 }
 
 Widget::~Widget() {
