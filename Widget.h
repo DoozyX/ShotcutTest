@@ -19,26 +19,32 @@ class Widget : public QWidget {
   Ui::Widget* ui;
   QSettings settings;
 
-  // TODO: replace shortcut parent to be app?
-  QShortcut openCloseMainNavigationShortcut{this};
-  QShortcut openCloseCallMonitorShortcut{this};
-  QShortcut openCloseDetailWindowShortcut{this};
-  QShortcut openCloseAllWindowsShortcut{this};
-  QShortcut openHelpShortcut{this};
-  QShortcut openPhoneSettingsShortcut{this};
-  QShortcut openContactsShortcut{this};
-  QShortcut openCallHistoryShortcut{this};
-  QShortcut holdUnholdCallShortcut{this};
-  QShortcut startStopCallRecordingShortcut{this};
-  QShortcut takeCallShortcut{this};
-  QShortcut hangUpCallShortcut{this};
-  QShortcut redialLastPhoneNumberShortcut{this};
-  QShortcut muteOnOffShortcut{this};
-  QShortcut dialSelectedAreaShortcut{this};
-  QShortcut turnUpMicrophoneShortcut{this};
-  QShortcut turnDownMicrophoneShortcut{this};
-  QShortcut turnUpSpeakerShortcut{this};
-  QShortcut turnDownSpeakerShortcut{this};
+  QList<QShortcut*> shortcutList;
+  enum ShortcutList {
+    OpenCloseMainNavigationShortcut,
+    OpenCloseCallMonitorShortcut,
+    OpenCloseDetailWindowShortcut,
+    OpenCloseAllWindowsShortcut,
+    OpenHelpShortcut,
+    OpenPhoneSettingsShortcut,
+    OpenContactsShortcut,
+    OpenCallHistoryShortcut,
+    HoldUnholdCallShortcut,
+    StartStopCallRecordingShortcut,
+    TakeCallShortcut,
+    HangUpCallShortcut,
+    RedialLastPhoneNumberShortcut,
+    MuteOnOffShortcut,
+    DialSelectedAreaShortcut,
+    TurnUpMicrophoneShortcut,
+    TurnDownMicrophoneShortcut,
+    TurnUpSpeakerShortcut,
+    TurnDownSpeakerShortcut,
+    LAST
+  };
+
+  void disableShortcuts();
+  void enableShortcuts();
 
  private slots:
   void onOpenCloseMainNavigation();
