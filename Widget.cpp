@@ -9,11 +9,13 @@
 Widget::Widget(QWidget* parent) : QWidget(parent), ui(new Ui::Widget) {
   ui->setupUi(this);
 
-  auto setupShortcut = [=](QSettings* settings, QShortcut* shortcut,
-                           KeySequenceLineEdit* lineEdit, const QString& key,
+  mHotkeyManager = new UGlobalHotkeys();
+  auto setupShortcut = [=](QSettings* settings, ShortcutList shortcutId,
+                           KeySequenceLineEdit* lineEdit,
                            const QString& defaultValue,
-                           void (Widget::*slot)()) {
+                           std::function<void(Widget&)> slot) {
     mShortcutEditList.append(lineEdit);
+    auto key = this->shortcutListToString(shortcutId);
     auto shotcutValue = settings->value(key, defaultValue).toString();
     lineEdit->setText(shotcutValue);
     connect(lineEdit, &KeySequenceLineEdit::keySequencePressed, this,
@@ -24,111 +26,92 @@ Widget::Widget(QWidget* parent) : QWidget(parent), ui(new Ui::Widget) {
                                         "record other shortcut."));
               } else {
                 lineEdit->setText(keySquence);
-                mChangedValues[shortcut] = lineEdit;
+                mChangedValues[shortcutId] = lineEdit;
               }
             });
     connect(lineEdit, &KeySequenceLineEdit::focusChanged, this,
             [=](bool focus) { this->enableShortcuts(!focus); });
-    shortcut->setKey(shotcutValue);
-    shortcut->setObjectName("shortcuts/" + key);
-    connect(shortcut, &QShortcut::activated, this, slot);
+    mHotkeyManager->registerHotkey(shotcutValue, shortcutId);
+    mShortcutValueList[shortcutId] = shotcutValue;
+    mShortcutSlots[shortcutId] = slot;
   };
-
-  for (auto i = 0; i < ShortcutList::LAST; ++i) {
-    mShortcutList.append(new QShortcut(this));
-  }
 
   mSettings.beginGroup("shortcuts");
 
-  setupShortcut(&mSettings,
-                mShortcutList[ShortcutList::OpenCloseMainNavigationShortcut],
-                ui->openCloseMainNavigationLineEdit, "openCloseMainNavigation",
-                "Alt+Ctrl+F9", &Widget::onOpenCloseMainNavigation);
+  setupShortcut(&mSettings, ShortcutList::OpenCloseMainNavigation,
+                ui->openCloseMainNavigationLineEdit, "Alt+Ctrl+F9",
+                &Widget::onOpenCloseMainNavigation);
 
-  setupShortcut(&mSettings,
-                mShortcutList[ShortcutList::OpenCloseCallMonitorShortcut],
-                ui->openCloseCallMonitorLineEdit, "openCloseCallMonitor",
-                "Alt+Ctrl+F10", &Widget::onOpenCloseCallMonitor);
+  setupShortcut(&mSettings, ShortcutList::OpenCloseCallMonitor,
+                ui->openCloseCallMonitorLineEdit, "Alt+Ctrl+F10",
+                &Widget::onOpenCloseCallMonitor);
 
-  setupShortcut(&mSettings,
-                mShortcutList[ShortcutList::OpenCloseDetailWindowShortcut],
-                ui->openCloseDetailWindowLineEdit, "openCloseDetailWindow",
-                "Alt+Ctrl+F11", &Widget::onOpenCloseDetailWindow);
+  setupShortcut(&mSettings, ShortcutList::OpenCloseDetailWindow,
+                ui->openCloseDetailWindowLineEdit, "Alt+Ctrl+F11",
+                &Widget::onOpenCloseDetailWindow);
 
-  setupShortcut(&mSettings,
-                mShortcutList[ShortcutList::OpenCloseAllWindowsShortcut],
-                ui->openCloseAllWindowsLineEdit, "openCloseAllWindows",
-                "Alt+Ctrl+Space", &Widget::onOpenCloseAllWindows);
+  setupShortcut(&mSettings, ShortcutList::OpenCloseAllWindows,
+                ui->openCloseAllWindowsLineEdit, "Alt+Ctrl+Space",
+                &Widget::onOpenCloseAllWindows);
 
-  setupShortcut(&mSettings, mShortcutList[ShortcutList::OpenHelpShortcut],
-                ui->openHelpLineEdit, "openHelp", "Ctrl+F1",
-                &Widget::onOpenHelp);
+  setupShortcut(&mSettings, ShortcutList::OpenHelp, ui->openHelpLineEdit,
+                "Ctrl+F1", &Widget::onOpenHelp);
 
-  setupShortcut(&mSettings,
-                mShortcutList[ShortcutList::OpenPhoneSettingsShortcut],
-                ui->openPhoneLineEdit, "openPhoneSettings", "Ctrl+F2",
-                &Widget::onOpenPhoneSettings);
+  setupShortcut(&mSettings, ShortcutList::OpenPhoneSettings,
+                ui->openPhoneLineEdit, "Ctrl+F2", &Widget::onOpenPhoneSettings);
 
-  setupShortcut(&mSettings, mShortcutList[ShortcutList::OpenContactsShortcut],
-                ui->openContactsLineEdit, "openContactsValue", "Ctrl+F3",
-                &Widget::onOpenContacts);
+  setupShortcut(&mSettings, ShortcutList::OpenContacts,
+                ui->openContactsLineEdit, "Ctrl+F3", &Widget::onOpenContacts);
 
-  setupShortcut(&mSettings,
-                mShortcutList[ShortcutList::OpenCallHistoryShortcut],
-                ui->openCallHisotryLineEdit, "openCallHistory", "Ctrl+F4",
+  setupShortcut(&mSettings, ShortcutList::OpenCallHistory,
+                ui->openCallHisotryLineEdit, "Ctrl+F4",
                 &Widget::onOpenCallHistory);
 
-  setupShortcut(&mSettings, mShortcutList[ShortcutList::HoldUnholdCallShortcut],
-                ui->holdUnholdCallLineEdit, "holdUnholdCall", "Ctrl+F5",
+  setupShortcut(&mSettings, ShortcutList::HoldUnholdCall,
+                ui->holdUnholdCallLineEdit, "Ctrl+F5",
                 &Widget::onHoldUnholdCall);
 
-  setupShortcut(&mSettings,
-                mShortcutList[ShortcutList::StartStopCallRecordingShortcut],
-                ui->startStopCallRecordingLineEdit, "startStopCallRecording",
-                "Alt+Ctrl+O", &Widget::onStartStopCallRecording);
+  setupShortcut(&mSettings, ShortcutList::StartStopCallRecording,
+                ui->startStopCallRecordingLineEdit, "Alt+Ctrl+O",
+                &Widget::onStartStopCallRecording);
 
-  setupShortcut(&mSettings, mShortcutList[ShortcutList::TakeCallShortcut],
-                ui->takeCallLineEdit, "takeCall", "Alt+PgUp",
-                &Widget::onTakeCall);
+  setupShortcut(&mSettings, ShortcutList::TakeCall, ui->takeCallLineEdit,
+                "Alt+PgUp", &Widget::onTakeCall);
 
-  setupShortcut(&mSettings, mShortcutList[ShortcutList::HangUpCallShortcut],
-                ui->hangUpCallLineEdit, "hangUpCall", "Alt+PgDown",
-                &Widget::onHangUpCall);
+  setupShortcut(&mSettings, ShortcutList::HangUpCall, ui->hangUpCallLineEdit,
+                "Alt+PgDown", &Widget::onHangUpCall);
 
-  setupShortcut(&mSettings,
-                mShortcutList[ShortcutList::RedialLastPhoneNumberShortcut],
-                ui->redialLastPhoneNumberLineEdit, "redialLastPhoneNumber",
-                "Alt+Ctrl+R", &Widget::onRedialLastPhoneNumber);
+  setupShortcut(&mSettings, ShortcutList::RedialLastPhoneNumber,
+                ui->redialLastPhoneNumberLineEdit, "Alt+Ctrl+R",
+                &Widget::onRedialLastPhoneNumber);
 
-  setupShortcut(&mSettings, mShortcutList[ShortcutList::MuteOnOffShortcut],
-                ui->muteOnOffLineEdit, "muteOnOff", "Alt+Ctrl+M",
-                &Widget::onMuteOnOff);
+  setupShortcut(&mSettings, ShortcutList::MuteOnOff, ui->muteOnOffLineEdit,
+                "Alt+Ctrl+M", &Widget::onMuteOnOff);
 
-  setupShortcut(&mSettings,
-                mShortcutList[ShortcutList::DialSelectedAreaShortcut],
-                ui->dialSelectedAreaLineEdit, "dialSelectedArea", "PAUSE",
+  setupShortcut(&mSettings, ShortcutList::DialSelectedArea,
+                ui->dialSelectedAreaLineEdit, "PAUSE",
                 &Widget::onDialSelectedArea);
 
-  setupShortcut(&mSettings,
-                mShortcutList[ShortcutList::TurnUpMicrophoneShortcut],
-                ui->turnUpMicrophoneLineEdit, "turnUpMicrophone",
-                "Alt+Ctrl+Right", &Widget::onTurnUpMicrophone);
+  setupShortcut(&mSettings, ShortcutList::TurnUpMicrophone,
+                ui->turnUpMicrophoneLineEdit, "Alt+Ctrl+Right",
+                &Widget::onTurnUpMicrophone);
 
-  setupShortcut(&mSettings,
-                mShortcutList[ShortcutList::TurnDownMicrophoneShortcut],
-                ui->turnDownMicrophoneLineEdit, "turnDownMicrophone",
-                "Alt+Ctrl+Left", &Widget::onTurnDownMicrophone);
+  setupShortcut(&mSettings, ShortcutList::TurnDownMicrophone,
+                ui->turnDownMicrophoneLineEdit, "Alt+Ctrl+Left",
+                &Widget::onTurnDownMicrophone);
 
-  setupShortcut(&mSettings, mShortcutList[ShortcutList::TurnUpSpeakerShortcut],
-                ui->turnUpSpeakerLineEdit, "turnUpSpeaker", "Alt+Ctrl+Up",
+  setupShortcut(&mSettings, ShortcutList::TurnUpSpeaker,
+                ui->turnUpSpeakerLineEdit, "Alt+Ctrl+Up",
                 &Widget::onTurnUpSpeaker);
 
-  setupShortcut(&mSettings,
-                mShortcutList[ShortcutList::TurnDownSpeakerShortcut],
-                ui->turnDownSpeakerLineEdit, "turnDownSpeaker", "Alt+Ctrl+Down",
+  setupShortcut(&mSettings, ShortcutList::TurnDownSpeaker,
+                ui->turnDownSpeakerLineEdit, "Alt+Ctrl+Down",
                 &Widget::onTurnDownSpeaker);
 
   mSettings.endGroup();
+
+  connect(mHotkeyManager, &UGlobalHotkeys::activated,
+          [=](size_t id) { mShortcutSlots[id](*this); });
 
   ui->cancelButton->setFocus();
 }
@@ -137,32 +120,45 @@ Widget::~Widget() {
   delete ui;
 }
 
+QString Widget::shortcutListToString(Widget::ShortcutList shortcut) {
+  return QVariant::fromValue(shortcut).toString();
+}
+
 void Widget::enableShortcuts(const bool enabled) {
-  for (auto shortcut : mShortcutList) {
-    shortcut->setEnabled(enabled);
+  if (enabled) {
+    QMapIterator<size_t, QString> shortcuts(mShortcutValueList);
+    while (shortcuts.hasNext()) {
+      shortcuts.next();
+      auto shortcutID = shortcuts.key();
+      auto shortcutValue = shortcuts.value();
+      mHotkeyManager->registerHotkey(shortcutValue, shortcutID);
+    }
+  } else {
+    mHotkeyManager->unregisterAllHotkeys();
   }
 }
 
 void Widget::saveChangedShortcuts() {
-  QMapIterator<QShortcut*, KeySequenceLineEdit*> changedValue(mChangedValues);
+  QMapIterator<size_t, KeySequenceLineEdit*> changedValue(mChangedValues);
   while (changedValue.hasNext()) {
     changedValue.next();
     auto shortcut = changedValue.key();
     auto lineEdit = changedValue.value();
     auto value = lineEdit->text();
-    shortcut->setKey(value);
-    mSettings.setValue(shortcut->objectName(), value);
+    auto key = shortcutListToString(static_cast<ShortcutList>(shortcut));
+    mHotkeyManager->registerHotkey(value, shortcut);
+    mSettings.setValue("shortcuts/" + key, value);
   }
   mChangedValues.clear();
 }
 
 void Widget::discardChangedShortcuts() {
-  QMapIterator<QShortcut*, KeySequenceLineEdit*> changedValue(mChangedValues);
+  QMapIterator<size_t, KeySequenceLineEdit*> changedValue(mChangedValues);
   while (changedValue.hasNext()) {
     changedValue.next();
     auto shortcut = changedValue.key();
     auto lineEdit = changedValue.value();
-    lineEdit->setText(shortcut->key().toString());
+    lineEdit->setText(mShortcutValueList[shortcut]);
   }
   mChangedValues.clear();
 }

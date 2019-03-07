@@ -5,6 +5,7 @@
 #include <QWidget>
 
 #include "KeySequenceLineEdit.h"
+#include "uglobalhotkeys.h"
 
 namespace Ui {
 class Widget;
@@ -14,6 +15,29 @@ class Widget : public QWidget {
   Q_OBJECT
 
  public:
+  enum ShortcutList {
+    OpenCloseMainNavigation,
+    OpenCloseCallMonitor,
+    OpenCloseDetailWindow,
+    OpenCloseAllWindows,
+    OpenHelp,
+    OpenPhoneSettings,
+    OpenContacts,
+    OpenCallHistory,
+    HoldUnholdCall,
+    StartStopCallRecording,
+    TakeCall,
+    HangUpCall,
+    RedialLastPhoneNumber,
+    MuteOnOff,
+    DialSelectedArea,
+    TurnUpMicrophone,
+    TurnDownMicrophone,
+    TurnUpSpeaker,
+    TurnDownSpeaker,
+  };
+  Q_ENUM(ShortcutList)
+
   explicit Widget(QWidget* parent = nullptr);
   ~Widget();
 
@@ -21,42 +45,23 @@ class Widget : public QWidget {
   Ui::Widget* ui;
   QSettings mSettings;
 
-  QList<KeySequenceLineEdit*> mShortcutEditList;
-  QList<QShortcut*> mShortcutList;
-  enum ShortcutList {
-    OpenCloseMainNavigationShortcut,
-    OpenCloseCallMonitorShortcut,
-    OpenCloseDetailWindowShortcut,
-    OpenCloseAllWindowsShortcut,
-    OpenHelpShortcut,
-    OpenPhoneSettingsShortcut,
-    OpenContactsShortcut,
-    OpenCallHistoryShortcut,
-    HoldUnholdCallShortcut,
-    StartStopCallRecordingShortcut,
-    TakeCallShortcut,
-    HangUpCallShortcut,
-    RedialLastPhoneNumberShortcut,
-    MuteOnOffShortcut,
-    DialSelectedAreaShortcut,
-    TurnUpMicrophoneShortcut,
-    TurnDownMicrophoneShortcut,
-    TurnUpSpeakerShortcut,
-    TurnDownSpeakerShortcut,
-    LAST
-  };
+  UGlobalHotkeys* mHotkeyManager;
 
-  QMap<QShortcut*, KeySequenceLineEdit*> mChangedValues;
+  QList<KeySequenceLineEdit*> mShortcutEditList;
+  /**
+   * @brief mShortcutList <shortcutId: int, shortcutValue: string>
+   */
+  QMap<size_t, QString> mShortcutValueList;
+  QMap<size_t, QString> mShortcutNameList;
+  QMap<size_t, std::function<void(Widget&)>> mShortcutSlots;
+  QMap<size_t, KeySequenceLineEdit*> mChangedValues;
+
+  QString shortcutListToString(ShortcutList shortcut);
 
   void enableShortcuts(bool enabled);
   void saveChangedShortcuts();
   void discardChangedShortcuts();
   bool shortcutExists(const QString& shortcut);
-
- private slots:
-  void on_okButton_clicked();
-  void on_applyButton_clicked();
-  void on_cancelButton_clicked();
 
   void onOpenCloseMainNavigation();
   void onOpenCloseCallMonitor();
@@ -77,4 +82,9 @@ class Widget : public QWidget {
   void onTurnDownMicrophone();
   void onTurnUpSpeaker();
   void onTurnDownSpeaker();
+
+ private slots:
+  void on_okButton_clicked();
+  void on_applyButton_clicked();
+  void on_cancelButton_clicked();
 };

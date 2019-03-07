@@ -1,7 +1,6 @@
 #ifndef KEYSEQUENCELINEEDIT_H
 #define KEYSEQUENCELINEEDIT_H
 
-#include <QDebug>
 #include <QKeyEvent>
 #include <QKeySequence>
 #include <QLineEdit>
