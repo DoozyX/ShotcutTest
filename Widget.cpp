@@ -9,18 +9,19 @@ Widget::Widget(QWidget* parent) : QWidget(parent), ui(new Ui::Widget) {
   ui->setupUi(this);
 
   auto setShortcut = [=](QSettings* settings, QShortcut* shortcut,
-                         QLineEdit* lineEdit, const QString& key,
+                         KeySequenceLineEdit* lineEdit, const QString& key,
                          const QString& defaultValue, void (Widget::*slot)()) {
     auto shotcutValue = settings->value(key, defaultValue).toString();
     lineEdit->setText(shotcutValue);
     connect(lineEdit, &QLineEdit::textChanged, this, [=]() {
       shortcut->setKey(lineEdit->text());
       settings->setValue("shortcuts/" + key, lineEdit->text());
-    }); /*
-     connect(lineEdit, &QLineEdit::, this, [=]() {
-       shortcut->setKey(lineEdit->text());
-       settings->setValue("shortcuts/" + key, lineEdit->text());
-     });*/
+    });
+    connect(lineEdit, &KeySequenceLineEdit::focusChanged, this,
+            [=](bool focus) {
+              qDebug() << "focus changed" << focus;
+              this->enableShortcuts(!focus);
+            });
     shortcut->setKey(shotcutValue);
     connect(shortcut, &QShortcut::activated, this, slot);
   };
@@ -119,15 +120,9 @@ Widget::~Widget() {
   delete ui;
 }
 
-void Widget::disableShortcuts() {
+void Widget::enableShortcuts(const bool enabled) {
   for (auto shortcut : shortcutList) {
-    shortcut->setEnabled(false);
-  }
-}
-
-void Widget::enableShortcuts() {
-  for (auto shortcut : shortcutList) {
-    shortcut->setEnabled(true);
+    shortcut->setEnabled(enabled);
   }
 }
 

@@ -38,3 +38,13 @@ void KeySequenceLineEdit::keyPressEvent(QKeyEvent* event) {
     this->setText(newSequence);
   }
 }
+
+void KeySequenceLineEdit::focusInEvent(QFocusEvent* event) {
+  QLineEdit::focusInEvent(event);
+  emit this->focusChanged(event->gotFocus());
+}
+
+void KeySequenceLineEdit::focusOutEvent(QFocusEvent* event) {
+  QLineEdit::focusOutEvent(event);
+  emit this->focusChanged(event->gotFocus());
+}

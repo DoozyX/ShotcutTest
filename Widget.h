@@ -43,8 +43,7 @@ class Widget : public QWidget {
     LAST
   };
 
-  void disableShortcuts();
-  void enableShortcuts();
+  void enableShortcuts(bool enabled);
 
  private slots:
   void onOpenCloseMainNavigation();

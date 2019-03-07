@@ -7,11 +7,19 @@
 #include <QLineEdit>
 
 class KeySequenceLineEdit : public QLineEdit {
+  Q_OBJECT
  public:
   explicit KeySequenceLineEdit(QWidget* parent = nullptr);
   explicit KeySequenceLineEdit(const QString&, QWidget* parent = nullptr);
 
   void keyPressEvent(QKeyEvent* event) override;
+
+ protected:
+  void focusInEvent(QFocusEvent* event) override;
+  void focusOutEvent(QFocusEvent* event) override;
+
+ signals:
+  void focusChanged(bool focus);
 };
 
 #endif  // KEYSEQUENCELINEEDIT_H
