@@ -29,7 +29,7 @@ Widget::Widget(QWidget* parent) : QWidget(parent), ui(new Ui::Widget) {
             });
     connect(lineEdit, &KeySequenceLineEdit::focusChanged, this,
             [=](bool focus) { this->enableShortcuts(!focus); });
-    shortcut->setShortcut(shotcutValue);
+    shortcut->setShortcut(shotcutValue, true);
     shortcut->setObjectName("shortcuts/" + key);
     connect(shortcut, &QHotkey::activated, this, slot);
   };
@@ -150,7 +150,7 @@ void Widget::saveChangedShortcuts() {
     auto shortcut = changedValue.key();
     auto lineEdit = changedValue.value();
     auto value = lineEdit->text();
-    shortcut->setShortcut(value);
+    shortcut->setShortcut(value, true);
     mSettings.setValue(shortcut->objectName(), value);
   }
   mChangedValues.clear();
