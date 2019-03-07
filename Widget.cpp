@@ -9,7 +9,7 @@
 Widget::Widget(QWidget* parent) : QWidget(parent), ui(new Ui::Widget) {
   ui->setupUi(this);
 
-  auto setupShortcut = [=](QSettings* settings, QShortcut* shortcut,
+  auto setupShortcut = [=](QSettings* settings, QHotkey* shortcut,
                            KeySequenceLineEdit* lineEdit, const QString& key,
                            const QString& defaultValue,
                            void (Widget::*slot)()) {
@@ -29,13 +29,13 @@ Widget::Widget(QWidget* parent) : QWidget(parent), ui(new Ui::Widget) {
             });
     connect(lineEdit, &KeySequenceLineEdit::focusChanged, this,
             [=](bool focus) { this->enableShortcuts(!focus); });
-    shortcut->setKey(shotcutValue);
+    shortcut->setShortcut(shotcutValue);
     shortcut->setObjectName("shortcuts/" + key);
-    connect(shortcut, &QShortcut::activated, this, slot);
+    connect(shortcut, &QHotkey::activated, this, slot);
   };
 
   for (auto i = 0; i < ShortcutList::LAST; ++i) {
-    mShortcutList.append(new QShortcut(this));
+    mShortcutList.append(new QHotkey(this));
   }
 
   mSettings.beginGroup("shortcuts");
@@ -139,30 +139,30 @@ Widget::~Widget() {
 
 void Widget::enableShortcuts(const bool enabled) {
   for (auto shortcut : mShortcutList) {
-    shortcut->setEnabled(enabled);
+    shortcut->setRegistered(enabled);
   }
 }
 
 void Widget::saveChangedShortcuts() {
-  QMapIterator<QShortcut*, KeySequenceLineEdit*> changedValue(mChangedValues);
+  QMapIterator<QHotkey*, KeySequenceLineEdit*> changedValue(mChangedValues);
   while (changedValue.hasNext()) {
     changedValue.next();
     auto shortcut = changedValue.key();
     auto lineEdit = changedValue.value();
     auto value = lineEdit->text();
-    shortcut->setKey(value);
+    shortcut->setShortcut(value);
     mSettings.setValue(shortcut->objectName(), value);
   }
   mChangedValues.clear();
 }
 
 void Widget::discardChangedShortcuts() {
-  QMapIterator<QShortcut*, KeySequenceLineEdit*> changedValue(mChangedValues);
+  QMapIterator<QHotkey*, KeySequenceLineEdit*> changedValue(mChangedValues);
   while (changedValue.hasNext()) {
     changedValue.next();
     auto shortcut = changedValue.key();
     auto lineEdit = changedValue.value();
-    lineEdit->setText(shortcut->key().toString());
+    lineEdit->setText(shortcut->shortcut().toString());
   }
   mChangedValues.clear();
 }

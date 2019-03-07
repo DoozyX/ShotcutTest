@@ -1,9 +1,9 @@
 #pragma once
 
 #include <QSettings>
-#include <QShortcut>
 #include <QWidget>
 
+#include "QHotkey"
 #include "KeySequenceLineEdit.h"
 
 namespace Ui {
@@ -22,7 +22,7 @@ class Widget : public QWidget {
   QSettings mSettings;
 
   QList<KeySequenceLineEdit*> mShortcutEditList;
-  QList<QShortcut*> mShortcutList;
+  QList<QHotkey*> mShortcutList;
   enum ShortcutList {
     OpenCloseMainNavigationShortcut,
     OpenCloseCallMonitorShortcut,
@@ -46,7 +46,7 @@ class Widget : public QWidget {
     LAST
   };
 
-  QMap<QShortcut*, KeySequenceLineEdit*> mChangedValues;
+  QMap<QHotkey*, KeySequenceLineEdit*> mChangedValues;
 
   void enableShortcuts(bool enabled);
   void saveChangedShortcuts();
