@@ -9,9 +9,10 @@
 Widget::Widget(QWidget* parent) : QWidget(parent), ui(new Ui::Widget) {
   ui->setupUi(this);
 
-  auto setShortcut = [=](QSettings* settings, QShortcut* shortcut,
-                         KeySequenceLineEdit* lineEdit, const QString& key,
-                         const QString& defaultValue, void (Widget::*slot)()) {
+  auto setupShortcut = [=](QSettings* settings, QShortcut* shortcut,
+                           KeySequenceLineEdit* lineEdit, const QString& key,
+                           const QString& defaultValue,
+                           void (Widget::*slot)()) {
     mShortcutEditList.append(lineEdit);
     auto shotcutValue = settings->value(key, defaultValue).toString();
     lineEdit->setText(shotcutValue);
@@ -39,88 +40,93 @@ Widget::Widget(QWidget* parent) : QWidget(parent), ui(new Ui::Widget) {
 
   mSettings.beginGroup("shortcuts");
 
-  setShortcut(&mSettings,
-              mShortcutList[ShortcutList::OpenCloseMainNavigationShortcut],
-              ui->openCloseMainNavigationLineEdit, "openCloseMainNavigation",
-              "Alt+Ctrl+F9", &Widget::onOpenCloseMainNavigation);
+  setupShortcut(&mSettings,
+                mShortcutList[ShortcutList::OpenCloseMainNavigationShortcut],
+                ui->openCloseMainNavigationLineEdit, "openCloseMainNavigation",
+                "Alt+Ctrl+F9", &Widget::onOpenCloseMainNavigation);
 
-  setShortcut(&mSettings,
-              mShortcutList[ShortcutList::OpenCloseCallMonitorShortcut],
-              ui->openCloseCallMonitorLineEdit, "openCloseCallMonitor",
-              "Alt+Ctrl+F10", &Widget::onOpenCloseCallMonitor);
+  setupShortcut(&mSettings,
+                mShortcutList[ShortcutList::OpenCloseCallMonitorShortcut],
+                ui->openCloseCallMonitorLineEdit, "openCloseCallMonitor",
+                "Alt+Ctrl+F10", &Widget::onOpenCloseCallMonitor);
 
-  setShortcut(&mSettings,
-              mShortcutList[ShortcutList::OpenCloseDetailWindowShortcut],
-              ui->openCloseDetailWindowLineEdit, "openCloseDetailWindow",
-              "Alt+Ctrl+F11", &Widget::onOpenCloseDetailWindow);
+  setupShortcut(&mSettings,
+                mShortcutList[ShortcutList::OpenCloseDetailWindowShortcut],
+                ui->openCloseDetailWindowLineEdit, "openCloseDetailWindow",
+                "Alt+Ctrl+F11", &Widget::onOpenCloseDetailWindow);
 
-  setShortcut(&mSettings,
-              mShortcutList[ShortcutList::OpenCloseAllWindowsShortcut],
-              ui->openCloseAllWindowsLineEdit, "openCloseAllWindows",
-              "Alt+Ctrl+Space", &Widget::onOpenCloseAllWindows);
+  setupShortcut(&mSettings,
+                mShortcutList[ShortcutList::OpenCloseAllWindowsShortcut],
+                ui->openCloseAllWindowsLineEdit, "openCloseAllWindows",
+                "Alt+Ctrl+Space", &Widget::onOpenCloseAllWindows);
 
-  setShortcut(&mSettings, mShortcutList[ShortcutList::OpenHelpShortcut],
-              ui->openHelpLineEdit, "openHelp", "Ctrl+F1", &Widget::onOpenHelp);
+  setupShortcut(&mSettings, mShortcutList[ShortcutList::OpenHelpShortcut],
+                ui->openHelpLineEdit, "openHelp", "Ctrl+F1",
+                &Widget::onOpenHelp);
 
-  setShortcut(&mSettings,
-              mShortcutList[ShortcutList::OpenPhoneSettingsShortcut],
-              ui->openPhoneLineEdit, "openPhoneSettings", "Ctrl+F2",
-              &Widget::onOpenPhoneSettings);
+  setupShortcut(&mSettings,
+                mShortcutList[ShortcutList::OpenPhoneSettingsShortcut],
+                ui->openPhoneLineEdit, "openPhoneSettings", "Ctrl+F2",
+                &Widget::onOpenPhoneSettings);
 
-  setShortcut(&mSettings, mShortcutList[ShortcutList::OpenContactsShortcut],
-              ui->openContactsLineEdit, "openContactsValue", "Ctrl+F3",
-              &Widget::onOpenContacts);
+  setupShortcut(&mSettings, mShortcutList[ShortcutList::OpenContactsShortcut],
+                ui->openContactsLineEdit, "openContactsValue", "Ctrl+F3",
+                &Widget::onOpenContacts);
 
-  setShortcut(&mSettings, mShortcutList[ShortcutList::OpenCallHistoryShortcut],
-              ui->openCallHisotryLineEdit, "openCallHistory", "Ctrl+F4",
-              &Widget::onOpenCallHistory);
+  setupShortcut(&mSettings,
+                mShortcutList[ShortcutList::OpenCallHistoryShortcut],
+                ui->openCallHisotryLineEdit, "openCallHistory", "Ctrl+F4",
+                &Widget::onOpenCallHistory);
 
-  setShortcut(&mSettings, mShortcutList[ShortcutList::HoldUnholdCallShortcut],
-              ui->holdUnholdCallLineEdit, "holdUnholdCall", "Ctrl+F5",
-              &Widget::onHoldUnholdCall);
+  setupShortcut(&mSettings, mShortcutList[ShortcutList::HoldUnholdCallShortcut],
+                ui->holdUnholdCallLineEdit, "holdUnholdCall", "Ctrl+F5",
+                &Widget::onHoldUnholdCall);
 
-  setShortcut(&mSettings,
-              mShortcutList[ShortcutList::StartStopCallRecordingShortcut],
-              ui->startStopCallRecordingLineEdit, "startStopCallRecording",
-              "Alt+Ctrl+O", &Widget::onStartStopCallRecording);
+  setupShortcut(&mSettings,
+                mShortcutList[ShortcutList::StartStopCallRecordingShortcut],
+                ui->startStopCallRecordingLineEdit, "startStopCallRecording",
+                "Alt+Ctrl+O", &Widget::onStartStopCallRecording);
 
-  setShortcut(&mSettings, mShortcutList[ShortcutList::TakeCallShortcut],
-              ui->takeCallLineEdit, "takeCall", "Alt+PgUp",
-              &Widget::onTakeCall);
+  setupShortcut(&mSettings, mShortcutList[ShortcutList::TakeCallShortcut],
+                ui->takeCallLineEdit, "takeCall", "Alt+PgUp",
+                &Widget::onTakeCall);
 
-  setShortcut(&mSettings, mShortcutList[ShortcutList::HangUpCallShortcut],
-              ui->hangUpCallLineEdit, "hangUpCall", "Alt+PgDown",
-              &Widget::onHangUpCall);
+  setupShortcut(&mSettings, mShortcutList[ShortcutList::HangUpCallShortcut],
+                ui->hangUpCallLineEdit, "hangUpCall", "Alt+PgDown",
+                &Widget::onHangUpCall);
 
-  setShortcut(&mSettings,
-              mShortcutList[ShortcutList::RedialLastPhoneNumberShortcut],
-              ui->redialLastPhoneNumberLineEdit, "redialLastPhoneNumber",
-              "Alt+Ctrl+R", &Widget::onRedialLastPhoneNumber);
+  setupShortcut(&mSettings,
+                mShortcutList[ShortcutList::RedialLastPhoneNumberShortcut],
+                ui->redialLastPhoneNumberLineEdit, "redialLastPhoneNumber",
+                "Alt+Ctrl+R", &Widget::onRedialLastPhoneNumber);
 
-  setShortcut(&mSettings, mShortcutList[ShortcutList::MuteOnOffShortcut],
-              ui->muteOnOffLineEdit, "muteOnOff", "Alt+Ctrl+M",
-              &Widget::onMuteOnOff);
+  setupShortcut(&mSettings, mShortcutList[ShortcutList::MuteOnOffShortcut],
+                ui->muteOnOffLineEdit, "muteOnOff", "Alt+Ctrl+M",
+                &Widget::onMuteOnOff);
 
-  setShortcut(&mSettings, mShortcutList[ShortcutList::DialSelectedAreaShortcut],
-              ui->dialSelectedAreaLineEdit, "dialSelectedArea", "PAUSE",
-              &Widget::onDialSelectedArea);
+  setupShortcut(&mSettings,
+                mShortcutList[ShortcutList::DialSelectedAreaShortcut],
+                ui->dialSelectedAreaLineEdit, "dialSelectedArea", "PAUSE",
+                &Widget::onDialSelectedArea);
 
-  setShortcut(&mSettings, mShortcutList[ShortcutList::TurnUpMicrophoneShortcut],
-              ui->turnUpMicrophoneLineEdit, "turnUpMicrophone",
-              "Alt+Ctrl+Right", &Widget::onTurnUpMicrophone);
+  setupShortcut(&mSettings,
+                mShortcutList[ShortcutList::TurnUpMicrophoneShortcut],
+                ui->turnUpMicrophoneLineEdit, "turnUpMicrophone",
+                "Alt+Ctrl+Right", &Widget::onTurnUpMicrophone);
 
-  setShortcut(&mSettings,
-              mShortcutList[ShortcutList::TurnDownMicrophoneShortcut],
-              ui->turnDownMicrophoneLineEdit, "turnDownMicrophone",
-              "Alt+Ctrl+Left", &Widget::onTurnDownMicrophone);
+  setupShortcut(&mSettings,
+                mShortcutList[ShortcutList::TurnDownMicrophoneShortcut],
+                ui->turnDownMicrophoneLineEdit, "turnDownMicrophone",
+                "Alt+Ctrl+Left", &Widget::onTurnDownMicrophone);
 
-  setShortcut(&mSettings, mShortcutList[ShortcutList::TurnUpSpeakerShortcut],
-              ui->turnUpSpeakerLineEdit, "turnUpSpeaker", "Alt+Ctrl+Up",
-              &Widget::onTurnUpSpeaker);
+  setupShortcut(&mSettings, mShortcutList[ShortcutList::TurnUpSpeakerShortcut],
+                ui->turnUpSpeakerLineEdit, "turnUpSpeaker", "Alt+Ctrl+Up",
+                &Widget::onTurnUpSpeaker);
 
-  setShortcut(&mSettings, mShortcutList[ShortcutList::TurnDownSpeakerShortcut],
-              ui->turnDownSpeakerLineEdit, "turnDownSpeaker", "Alt+Ctrl+Down",
-              &Widget::onTurnDownSpeaker);
+  setupShortcut(&mSettings,
+                mShortcutList[ShortcutList::TurnDownSpeakerShortcut],
+                ui->turnDownSpeakerLineEdit, "turnDownSpeaker", "Alt+Ctrl+Down",
+                &Widget::onTurnDownSpeaker);
 
   mSettings.endGroup();
 
