@@ -93,10 +93,18 @@ quint32 QHotkeyPrivateX11::nativeKeycode(Qt::Key keycode, bool &ok)
 	KeySym keysym = XStringToKeysym(keyString.toLatin1().constData());
 	if (keysym == NoSymbol) {
 		//not found -> just use the key
-		if(keycode <= 0xFFFF)
+		if(keycode <= 0xFFFF) {
 			keysym = keycode;
-		else
+		}
+		else if (keycode == Qt::Key_PageUp) {
+			keysym = 0xff55;
+		}
+		else if (keycode == Qt::Key_PageDown) {
+			keysym = 0xff56;
+		}
+		else {
 			return 0;
+		}
 	}
 
 	Display *display = QX11Info::display();
