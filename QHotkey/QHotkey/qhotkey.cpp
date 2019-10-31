@@ -20,8 +20,7 @@ QHotkey::QHotkey(QObject *parent) :
 	QObject(parent),
 	_keyCode(Qt::Key_unknown),
 	_modifiers(Qt::NoModifier),
-	_nativeShortcut(),
-	_registered(false)
+    _nativeShortcut()
 {}
 
 QHotkey::QHotkey(const QKeySequence &sequence, bool autoRegister, QObject *parent) :

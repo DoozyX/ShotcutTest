@@ -105,7 +105,7 @@ private:
 	Qt::KeyboardModifiers _modifiers;
 
 	NativeShortcut _nativeShortcut;
-	bool _registered;
+    bool _registered = false;
 };
 
 uint QHOTKEY_SHARED_EXPORT qHash(const QHotkey::NativeShortcut &key);
