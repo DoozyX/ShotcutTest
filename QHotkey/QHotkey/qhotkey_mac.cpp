@@ -29,9 +29,9 @@ QHash<QHotkey::NativeShortcut, EventHotKeyRef> QHotkeyPrivateMac::hotkeyRefs;
 
 bool QHotkeyPrivateMac::nativeEventFilter(const QByteArray &eventType, void *message, long *result)
 {
-	Q_UNUSED(eventType);
-	Q_UNUSED(message);
-	Q_UNUSED(result);
+    Q_UNUSED(eventType)
+    Q_UNUSED(message)
+    Q_UNUSED(result)
 	return false;
 }
 
@@ -241,8 +241,8 @@ bool QHotkeyPrivateMac::unregisterShortcut(QHotkey::NativeShortcut shortcut)
 
 OSStatus QHotkeyPrivateMac::hotkeyEventHandler(EventHandlerCallRef nextHandler, EventRef event, void* data)
 {
-	Q_UNUSED(nextHandler);
-	Q_UNUSED(data);
+    Q_UNUSED(nextHandler)
+    Q_UNUSED(data)
 
 	if (GetEventClass(event) == kEventClassKeyboard &&
 		GetEventKind(event) == kEventHotKeyPressed) {

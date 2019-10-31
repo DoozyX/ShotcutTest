@@ -25,8 +25,8 @@ NATIVE_INSTANCE(QHotkeyPrivateWin)
 
 bool QHotkeyPrivateWin::nativeEventFilter(const QByteArray &eventType, void *message, long *result)
 {
-	Q_UNUSED(eventType);
-	Q_UNUSED(result);
+    Q_UNUSED(eventType)
+    Q_UNUSED(result)
 
 	MSG* msg = static_cast<MSG*>(message);
 	if(msg->message == WM_HOTKEY)
