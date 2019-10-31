@@ -138,7 +138,7 @@ Widget::~Widget() {
 }
 
 void Widget::enableShortcuts(const bool enabled) {
-  for (auto shortcut : mShortcutList) {
+  for (const auto shortcut : mShortcutList) {
     shortcut->setRegistered(enabled);
   }
 }
