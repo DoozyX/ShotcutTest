@@ -168,7 +168,7 @@ void Widget::discardChangedShortcuts() {
 }
 
 bool Widget::shortcutExists(const QString& shortcut) {
-  for (auto lineEdit : mShortcutEditList) {
+  for (const auto lineEdit : mShortcutEditList) {
     if (lineEdit->text() == shortcut) {
       return true;
     }
