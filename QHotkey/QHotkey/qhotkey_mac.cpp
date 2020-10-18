@@ -130,12 +130,12 @@ quint32 QHotkeyPrivateMac::nativeKeycode(Qt::Key keycode, bool &ok)
 	CFDataRef currentLayoutData;
 	TISInputSourceRef currentKeyboard = TISCopyCurrentKeyboardInputSource();
 
-	if (currentKeyboard == NULL)
+    if (currentKeyboard == nullptr)
 		return 0;
 
 	currentLayoutData = (CFDataRef)TISGetInputSourceProperty(currentKeyboard, kTISPropertyUnicodeKeyLayoutData);
 	CFRelease(currentKeyboard);
-	if (currentLayoutData == NULL)
+    if (currentLayoutData == nullptr)
 		return 0;
 
 	UCKeyboardLayout* header = (UCKeyboardLayout*)CFDataGetBytePtr(currentLayoutData);
@@ -201,7 +201,7 @@ bool QHotkeyPrivateMac::registerShortcut(QHotkey::NativeShortcut shortcut)
 		EventTypeSpec eventSpec;
 		eventSpec.eventClass = kEventClassKeyboard;
 		eventSpec.eventKind = kEventHotKeyPressed;
-		InstallApplicationEventHandler(&QHotkeyPrivateMac::hotkeyEventHandler, 1, &eventSpec, NULL, NULL);
+        InstallApplicationEventHandler(&QHotkeyPrivateMac::hotkeyEventHandler, 1, &eventSpec, nullptr, nullptr);
 	}
 
 	EventHotKeyID hkeyID;
@@ -250,9 +250,9 @@ OSStatus QHotkeyPrivateMac::hotkeyEventHandler(EventHandlerCallRef nextHandler, 
 		GetEventParameter(event,
 						  kEventParamDirectObject,
 						  typeEventHotKeyID,
-						  NULL,
+                          nullptr,
 						  sizeof(EventHotKeyID),
-						  NULL,
+                          nullptr,
 						  &hkeyID);
 		hotkeyPrivate->activateShortcut({hkeyID.signature, hkeyID.id});
 	}
