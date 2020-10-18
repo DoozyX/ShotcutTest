@@ -228,7 +228,7 @@ quint32 QHotkeyPrivateWin::nativeModifiers(Qt::KeyboardModifiers modifiers, bool
 
 bool QHotkeyPrivateWin::registerShortcut(QHotkey::NativeShortcut shortcut)
 {
-	BOOL ok = RegisterHotKey(NULL,
+    BOOL ok = RegisterHotKey(nullptr,
 							 HKEY_ID(shortcut),
 							 shortcut.modifier,
 							 shortcut.key);
@@ -243,7 +243,7 @@ bool QHotkeyPrivateWin::registerShortcut(QHotkey::NativeShortcut shortcut)
 
 bool QHotkeyPrivateWin::unregisterShortcut(QHotkey::NativeShortcut shortcut)
 {
-	BOOL ok = UnregisterHotKey(NULL, HKEY_ID(shortcut));
+    BOOL ok = UnregisterHotKey(nullptr, HKEY_ID(shortcut));
 	if(ok)
 		return true;
 	else {
@@ -255,14 +255,14 @@ bool QHotkeyPrivateWin::unregisterShortcut(QHotkey::NativeShortcut shortcut)
 
 QString QHotkeyPrivateWin::formatWinError(DWORD winError)
 {
-	wchar_t *buffer = NULL;
+    wchar_t *buffer = nullptr;
 	DWORD num = FormatMessageW(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,
-							   NULL,
+                               nullptr,
 							   winError,
 							   0,
 							   (LPWSTR)&buffer,
 							   0,
-							   NULL);
+                               nullptr);
 	if(buffer) {
 		QString res = QString::fromWCharArray(buffer, num);
 		LocalFree(buffer);
