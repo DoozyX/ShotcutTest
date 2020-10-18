@@ -19,10 +19,10 @@ class Widget : public QWidget {
 
  private:
   Ui::Widget* ui;
-  QSettings mSettings;
+  QSettings m_Settings;
 
-  QList<KeySequenceLineEdit*> mShortcutEditList;
-  QList<QHotkey*> mShortcutList;
+  QList<KeySequenceLineEdit*> m_ShortcutEditList;
+  QList<QHotkey*> m_ShortcutList;
   enum ShortcutList {
     OpenCloseMainNavigationShortcut,
     OpenCloseCallMonitorShortcut,
