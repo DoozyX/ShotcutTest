@@ -101,11 +101,11 @@ signals:
 	void registeredChanged(bool registered);
 
 private:
-	Qt::Key _keyCode;
-	Qt::KeyboardModifiers _modifiers;
+    Qt::Key m_keyCode;
+    Qt::KeyboardModifiers m_modifiers;
 
-	NativeShortcut _nativeShortcut;
-    bool _registered = false;
+    NativeShortcut m_nativeShortcut;
+    bool m_registered = false;
 };
 
 uint QHOTKEY_SHARED_EXPORT qHash(const QHotkey::NativeShortcut &key);
